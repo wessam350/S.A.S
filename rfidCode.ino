@@ -3,11 +3,21 @@
 
 #define SS_PIN 10
 #define RST_PIN 9
-#define SP_PIN 8
+//#define SP_PIN 8
 
 MFRC522 rfid(SS_PIN, RST_PIN);
 
 MFRC522::MIFARE_Key key;
+
+String tag1 = "C0:2B:60:A7";
+String tag2 = "A0:F0:10:A6";
+String tag3 = "B7:83:82:B9";
+
+String aTags[] = {"C0:2B:60:A7", "A0:F0:10:A6", "B7:83:82:B9"};
+String ttags[2] ;
+String vv[] = { "" , "" , "" , "" };
+
+int cont = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -39,8 +49,10 @@ void loop() {
 
   Serial.print("Tap card key: ");
   Serial.println(strID);
-  if(strID.substring(0) == "C0:2B:60:A7"){
-    
+  if(strID.substring(0) == tag1 || strID.substring(0) == tag2 || strID.substring(0) == tag3){
+    ttags[cont] = strID;
+    cont++;
+    if(cont == 3){
     Serial.println("Access Allow");
     tone(4, 150);
     delay(300);
@@ -49,7 +61,11 @@ void loop() {
     tone(4, 150);
     delay(300);
     noTone(4);
-    
+      for(int i = 0 ; i<cont; i++){
+        ttags[i] = vv[i];
+      }
+      cont = 0;
+    }
   } else {
     Serial.println("Access Denied");
     tone(4, 255);
